@@ -1,0 +1,19 @@
+# Native build outputs
+/kindle-chinesechess
+/smoke-test
+*.o
+/_pikafish_build/
+/_pikafish_verify_out/
+/bin/armhf/pikafish
+/bin/armhf/pikafish.nnue
+
+# Generated package tree
+/dist/
+/release/extensions/
+/release/documents/
+/release/kindle-chinesechess-extension/
+
+# Editor/OS noise
+*~
+.DS_Store
+* - Copy.png

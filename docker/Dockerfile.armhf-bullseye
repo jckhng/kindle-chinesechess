@@ -1,0 +1,19 @@
+FROM arm32v7/debian:bullseye
+
+ENV DEBIAN_FRONTEND=noninteractive
+
+RUN apt-get update \
+    && apt-get install -y --no-install-recommends \
+        build-essential \
+        ca-certificates \
+        file \
+        libcairo2-dev \
+        libgtk2.0-dev \
+        librsvg2-dev \
+        make \
+        pkg-config \
+        python3 \
+        zip \
+    && rm -rf /var/lib/apt/lists/*
+
+WORKDIR /src/kindle-chinesechess

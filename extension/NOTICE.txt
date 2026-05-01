@@ -1,0 +1,40 @@
+Kindle ChineseChess
+===================
+
+Unofficial Kindle-friendly Xiangqi / Chinese Chess game using a native
+GTK2/Cairo interface for jailbroken Kindle devices.
+
+Project lineage
+---------------
+
+The Xiangqi rules, piece setup, and built-in AI are adapted from the GPL-3.0
+XMuli ChineseChess project:
+
+  https://github.com/XMuli/ChineseChess
+
+Board and piece artwork is copied from the MIT-licensed Augus1217 Chinese-Chess
+project:
+
+  https://github.com/Augus1217/Chinese-Chess
+
+The Kindle application shell, Docker build pattern, and KUAL packaging follow
+the GnomeGames4Kindle Kindle ports, especially Kindle GlChess and Kindle Iagno.
+
+Pikafish
+--------
+
+The app can use Pikafish as an external UCI engine when a compatible executable
+is installed as bin/armhf/pikafish. This release may bundle a Kindle ARMv7
+hard-float build of the GPLv3 Pikafish engine from:
+
+  https://github.com/official-pikafish/Pikafish
+
+If Pikafish is missing or fails to start, the app falls back to the embedded AI.
+When Pikafish is bundled, LICENSES/PIKAFISH-SOURCE.txt records the exact
+upstream commit and source/build notes for the binary.
+
+Licensing
+---------
+
+The project is distributed with GPL-family and MIT license texts in LICENSES/.
+Runtime libraries bundled in this package keep their own upstream licenses.

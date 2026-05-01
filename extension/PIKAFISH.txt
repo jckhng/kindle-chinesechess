@@ -1,0 +1,41 @@
+Pikafish Integration
+====================
+
+Kindle ChineseChess can use Pikafish as an external UCI engine when a
+Kindle-compatible executable is present at:
+
+  /mnt/us/extensions/kindle-chinesechess/bin/armhf/pikafish
+
+If no compatible Pikafish binary is present, the app automatically falls back
+to its embedded AI.
+
+License
+-------
+
+Pikafish is GPLv3. This package bundles Pikafish only when an ARM hard-float
+binary and its NNUE network are present at package time.
+
+When a package bundles Pikafish, it includes:
+
+  LICENSES/PIKAFISH-COPYING.txt
+  LICENSES/PIKAFISH-AUTHORS.txt
+  LICENSES/PIKAFISH-SOURCE.txt
+
+PIKAFISH-SOURCE.txt records the upstream URL, exact tested commit, and build
+source model for the bundled binary. The ARM32 source patches are embedded
+verbatim in the repository's build_pikafish.sh script, and the reproducible
+build notes are in docs/PIKAFISH_ARM32_BUILD.md.
+
+Build Note
+----------
+
+The repository pins the tested Pikafish source as a Git submodule at:
+
+  https://github.com/official-pikafish/Pikafish
+
+To rebuild the engine:
+
+  git clone --recurse-submodules <repo>
+  cd kindle-chinesechess
+  ./build_pikafish.sh
+  ./package_extension.sh

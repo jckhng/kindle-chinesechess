@@ -1,0 +1,3 @@
+[submodule "Pikafish"]
+	path = Pikafish
+	url = https://github.com/official-pikafish/Pikafish

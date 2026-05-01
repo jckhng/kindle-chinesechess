@@ -1,0 +1,21 @@
+Image Assets
+============
+
+This package includes board and piece PNG assets copied from:
+
+  Chinese-Chess/public/images
+  https://github.com/Augus1217/Chinese-Chess
+
+The source project's package metadata identifies Chinese-Chess as MIT licensed:
+
+  https://github.com/Augus1217/Chinese-Chess
+
+The MIT license text is included as:
+
+  LICENSES/MIT
+
+Files included:
+
+  board.png
+  r_k.png r_a.png r_b.png r_n.png r_r.png r_c.png r_p.png
+  b_k.png b_a.png b_b.png b_n.png b_r.png b_c.png b_p.png
