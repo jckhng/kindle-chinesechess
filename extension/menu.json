@@ -17,6 +17,12 @@
           "exitmenu": true
         },
         {
+          "name": "Launch With Topbar",
+          "priority": 25,
+          "action": "env KINDLE_SHOW_TOPBAR=1 /bin/sh ./launch_kindlechinesechess.sh --restart",
+          "exitmenu": true
+        },
+        {
           "name": "Stop",
           "priority": 30,
           "action": "/bin/sh ./stop_kindlechinesechess.sh",

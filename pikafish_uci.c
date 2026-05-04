@@ -203,14 +203,22 @@ void pikafish_uci_set_move_callback(PikafishUci *engine, PikafishMoveCallback ca
 void pikafish_uci_set_difficulty(PikafishUci *engine, gint preset) {
     switch (preset) {
     case 0:
-        engine->movetime_ms = 300;
+        /* Kid-friendly: shallow one-ply search. Pikafish does not expose
+         * UCI_Elo/UCI_LimitStrength, so search limits are the reliable knob. */
+        engine->search_depth = 1;
+        engine->movetime_ms = 120;
+        engine->watchdog_ms = 2000;
         break;
     case 2:
+        engine->search_depth = 0;
         engine->movetime_ms = 1400;
+        engine->watchdog_ms = engine->movetime_ms;
         break;
     case 1:
     default:
-        engine->movetime_ms = 700;
+        engine->search_depth = 2;
+        engine->movetime_ms = 300;
+        engine->watchdog_ms = 3000;
         break;
     }
 }
@@ -244,13 +252,17 @@ gboolean pikafish_uci_request_move(PikafishUci *engine) {
     write_line(engine, position);
     g_free(position);
     engine->waiting_for_move = TRUE;
-    go_line = g_strdup_printf("go movetime %d", engine->movetime_ms);
+    if (engine->search_depth > 0) {
+        go_line = g_strdup_printf("go depth %d", engine->search_depth);
+    } else {
+        go_line = g_strdup_printf("go movetime %d", engine->movetime_ms);
+    }
     write_line(engine, go_line);
     g_free(go_line);
 
-    /* Arm a watchdog: movetime + 8 s grace period before triggering fallback. */
+    /* Arm a watchdog: requested search budget + 8 s grace period before fallback. */
     cancel_watchdog(engine);
-    engine->watchdog_id = g_timeout_add(engine->movetime_ms + 8000, pikafish_watchdog_cb, engine);
+    engine->watchdog_id = g_timeout_add(engine->watchdog_ms + 8000, pikafish_watchdog_cb, engine);
 
     return TRUE;
 }

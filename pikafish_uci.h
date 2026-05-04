@@ -24,6 +24,8 @@ typedef struct {
     guint watchdog_id;    /* fallback timer armed while waiting for bestmove */
     guint child_watch_id; /* monitors child exit for diagnostic logging */
     gint movetime_ms;
+    gint search_depth;    /* 0 means use movetime instead */
+    gint watchdog_ms;
     PikafishMoveCallback move_callback;
     gpointer move_callback_data;
 } PikafishUci;

@@ -18,6 +18,7 @@
 
 #define APP_TITLE "Kindle ChineseChess"
 #define KINDLE_WINDOW_TITLE "L:A_N:application_ID:kindlechinesechess_PC:N_O:URL"
+#define KINDLE_WINDOW_TITLE_TOPBAR "L:A_N:application_PC:T_ID:kindlechinesechess_O:URL"
 #define LOG_PATH "/mnt/us/kindle-chinesechess.log"
 #define SAVE_PATH "/mnt/us/documents/kindle-chinesechess.txt"
 #define KINDLE_APP_WIDTH 1072
@@ -31,6 +32,13 @@ typedef enum {
     MODE_AI_DEMO
 } AppMode;
 
+static const char *kindle_window_title(void)
+{
+    const char *value = g_getenv("KINDLE_SHOW_TOPBAR");
+    return (value != NULL && value[0] != '\0' && strcmp(value, "0") != 0) ? KINDLE_WINDOW_TITLE_TOPBAR
+                                                                          : KINDLE_WINDOW_TITLE;
+}
+
 typedef struct {
     GtkWidget *window;
     GtkWidget *board;
@@ -38,6 +46,8 @@ typedef struct {
     GtkWidget *mode_combo;
     GtkWidget *level_combo;
     GtkWidget *moves_label;
+    GtkWidget *history_sidebar;
+    GtkWidget *history_toggle_button;
     GtkWidget *history_view;
     GtkWidget *history_first_button;
     GtkWidget *history_prev_button;
@@ -53,6 +63,7 @@ typedef struct {
     guint ai_source;
     int view_ply;
     char message[192];
+    gboolean history_visible;
 } AppState;
 
 static AppState app;
@@ -66,6 +77,22 @@ static void load_assets(void);
 static void clear_assets(void);
 static gboolean board_expose(GtkWidget *widget, GdkEventExpose *event, gpointer data);
 static gboolean board_button(GtkWidget *widget, GdkEventButton *event, gpointer data);
+
+static void toggle_history_cb(GtkWidget *widget, gpointer data) {
+    (void)widget;
+    (void)data;
+
+    app.history_visible = !app.history_visible;
+    if (app.history_visible) {
+        gtk_widget_show(app.history_sidebar);
+        gtk_button_set_label(GTK_BUTTON(app.history_toggle_button), "Hide Moves");
+    } else {
+        gtk_widget_hide(app.history_sidebar);
+        gtk_button_set_label(GTK_BUTTON(app.history_toggle_button), "Show Moves");
+    }
+    gtk_widget_queue_resize(app.board);
+    gtk_widget_queue_draw(app.board);
+}
 
 static void app_log(const char *message) {
     FILE *f = fopen(LOG_PATH, "a");
@@ -719,6 +746,51 @@ static void draw_star(cairo_t *cr, double x, double y, double s) {
     cairo_line_to(cr, x, y + s);
 }
 
+static void draw_cell_highlight(cairo_t *cr, double left, double top, double cell, int row, int col, gboolean selected) {
+    double x = left + col * cell;
+    double y = top + row * cell;
+    double r = cell * 0.38;
+
+    if (row < 0 || row >= XIANGQI_ROWS || col < 0 || col >= XIANGQI_COLS) {
+        return;
+    }
+
+    cairo_save(cr);
+    cairo_new_path(cr);
+    cairo_arc(cr, x, y, r, 0, 2 * G_PI);
+    if (selected) {
+        cairo_set_source_rgba(cr, 0.0, 0.0, 0.0, 0.26);
+    } else {
+        cairo_set_source_rgba(cr, 0.0, 0.0, 0.0, 0.14);
+    }
+    cairo_fill_preserve(cr);
+    cairo_set_source_rgba(cr, 0.0, 0.0, 0.0, selected ? 0.95 : 0.65);
+    cairo_set_line_width(cr, selected ? 4.0 : 2.6);
+    cairo_stroke(cr);
+    cairo_restore(cr);
+}
+
+static void draw_cell_focus_ring(cairo_t *cr, double left, double top, double cell, int row, int col, gboolean current) {
+    double x = left + col * cell;
+    double y = top + row * cell;
+    double r = cell * (current ? 0.49 : 0.44);
+
+    if (row < 0 || row >= XIANGQI_ROWS || col < 0 || col >= XIANGQI_COLS) {
+        return;
+    }
+
+    cairo_save(cr);
+    cairo_new_path(cr);
+    cairo_arc(cr, x, y, r, 0, 2 * G_PI);
+    cairo_set_source_rgb(cr, current ? 0.0 : 1.0, current ? 0.0 : 1.0, current ? 0.0 : 1.0);
+    cairo_set_line_width(cr, current ? cell * 0.075 : cell * 0.045);
+    cairo_stroke_preserve(cr);
+    cairo_set_source_rgb(cr, current ? 1.0 : 0.0, current ? 1.0 : 0.0, current ? 1.0 : 0.0);
+    cairo_set_line_width(cr, current ? cell * 0.025 : cell * 0.02);
+    cairo_stroke(cr);
+    cairo_restore(cr);
+}
+
 static gboolean board_expose(GtkWidget *widget, GdkEventExpose *event, gpointer data) {
     cairo_t *cr;
     XiangqiGame view;
@@ -728,11 +800,13 @@ static gboolean board_expose(GtkWidget *widget, GdkEventExpose *event, gpointer 
     int row;
     int col;
     int i;
+    int ply;
     (void)event;
     (void)data;
 
     cr = gdk_cairo_create(widget->window);
-    build_view_game(&view, current_view_ply());
+    ply = current_view_ply();
+    build_view_game(&view, ply);
     board_geometry(widget, &left, &top, &cell);
 
     cairo_set_source_rgb(cr, 1, 1, 1);
@@ -793,6 +867,16 @@ static gboolean board_expose(GtkWidget *widget, GdkEventExpose *event, gpointer 
         draw_centered_text(cr, "BORDER", left + 5.5 * cell, top + 4.5 * cell, cell * 0.22, TRUE);
     }
 
+    if (ply > 0) {
+        XiangqiMove last = app.game.history[ply - 1];
+        draw_cell_highlight(cr, left, top, cell, last.from_row, last.from_col, FALSE);
+        draw_cell_highlight(cr, left, top, cell, last.to_row, last.to_col, FALSE);
+    }
+    if (view.selected_id >= 0 && view.selected_id < XIANGQI_PIECES && !view.pieces[view.selected_id].dead) {
+        XiangqiPiece *selected = &view.pieces[view.selected_id];
+        draw_cell_highlight(cr, left, top, cell, selected->row, selected->col, TRUE);
+    }
+
     for (i = 0; i < XIANGQI_PIECES; i++) {
         XiangqiPiece *p = &view.pieces[i];
         double x;
@@ -826,13 +910,6 @@ static gboolean board_expose(GtkWidget *widget, GdkEventExpose *event, gpointer 
             gdk_cairo_set_source_pixbuf(cr, app.piece_images[p->side][p->type], 0, 0);
             cairo_paint(cr);
             cairo_restore(cr);
-            if (p->side == XIANGQI_BLACK) {
-                cairo_new_path(cr);
-                cairo_arc(cr, x, y, size * 0.48, 0, 2 * G_PI);
-                cairo_set_source_rgb(cr, 0, 0, 0);
-                cairo_set_line_width(cr, size * 0.075);
-                cairo_stroke(cr);
-            }
             /* Red pieces use red ink which e-ink renders as light grey — darken
              * with a semi-transparent black ring so they stay legible. */
             if (p->side == XIANGQI_RED) {
@@ -847,9 +924,13 @@ static gboolean board_expose(GtkWidget *widget, GdkEventExpose *event, gpointer 
             cairo_arc(cr, x, y, r, 0, 2 * G_PI);
             cairo_set_source_rgb(cr, 1, 1, 1);
             cairo_fill_preserve(cr);
-            cairo_set_source_rgb(cr, 0, 0, 0);
-            cairo_set_line_width(cr, view.selected_id == i ? 5.0 : 2.5);
-            cairo_stroke(cr);
+            if (view.selected_id == i || p->side == XIANGQI_RED) {
+                cairo_set_source_rgb(cr, 0, 0, 0);
+                cairo_set_line_width(cr, view.selected_id == i ? 5.0 : 2.0);
+                cairo_stroke(cr);
+            } else {
+                cairo_new_path(cr);
+            }
 
             if (p->side == XIANGQI_RED) {
                 cairo_new_path(cr);
@@ -869,6 +950,16 @@ static gboolean board_expose(GtkWidget *widget, GdkEventExpose *event, gpointer 
             cairo_set_line_width(cr, 4.0);
             cairo_stroke(cr);
         }
+    }
+
+    if (ply > 0) {
+        XiangqiMove last = app.game.history[ply - 1];
+        draw_cell_focus_ring(cr, left, top, cell, last.from_row, last.from_col, FALSE);
+        draw_cell_focus_ring(cr, left, top, cell, last.to_row, last.to_col, TRUE);
+    }
+    if (view.selected_id >= 0 && view.selected_id < XIANGQI_PIECES && !view.pieces[view.selected_id].dead) {
+        XiangqiPiece *selected = &view.pieces[view.selected_id];
+        draw_cell_focus_ring(cr, left, top, cell, selected->row, selected->col, TRUE);
     }
 
     cairo_destroy(cr);
@@ -957,6 +1048,18 @@ static void update_ui(void) {
     gtk_widget_queue_draw(app.board);
 }
 
+static gboolean combo_button_press_cb(GtkWidget *widget, GdkEventButton *event, gpointer data) {
+    (void)data;
+
+    if (event->type != GDK_BUTTON_PRESS || event->button != 1) {
+        return FALSE;
+    }
+
+    gtk_widget_grab_focus(widget);
+    gtk_combo_box_popup(GTK_COMBO_BOX(widget));
+    return TRUE;
+}
+
 static GtkWidget *make_combo(const char **items, int count, int active) {
     GtkWidget *combo = gtk_combo_box_new_text();
     int i;
@@ -965,6 +1068,8 @@ static GtkWidget *make_combo(const char **items, int count, int active) {
     }
     gtk_combo_box_set_active(GTK_COMBO_BOX(combo), active);
     app_apply_high_contrast(combo);
+    gtk_widget_add_events(combo, GDK_BUTTON_PRESS_MASK);
+    g_signal_connect(combo, "button-press-event", G_CALLBACK(combo_button_press_cb), NULL);
     return combo;
 }
 
@@ -1020,7 +1125,7 @@ int main(int argc, char **argv) {
     set_message("Red to move.");
 
     app.window = gtk_window_new(GTK_WINDOW_TOPLEVEL);
-    gtk_window_set_title(GTK_WINDOW(app.window), KINDLE_WINDOW_TITLE);
+    gtk_window_set_title(GTK_WINDOW(app.window), kindle_window_title());
     gtk_window_set_default_size(GTK_WINDOW(app.window), KINDLE_APP_WIDTH, KINDLE_APP_HEIGHT);
     gtk_widget_set_size_request(app.window, KINDLE_APP_WIDTH, KINDLE_APP_HEIGHT);
     gtk_window_set_resizable(GTK_WINDOW(app.window), FALSE);
@@ -1056,6 +1161,9 @@ int main(int argc, char **argv) {
     labeled_combo(settings, "Level", app.level_combo);
     app.moves_label = gtk_label_new("Moves: 0");
     gtk_box_pack_start(GTK_BOX(settings), app.moves_label, FALSE, FALSE, 8);
+    app.history_toggle_button = gtk_button_new_with_label("Hide Moves");
+    gtk_box_pack_start(GTK_BOX(settings), app.history_toggle_button, FALSE, FALSE, 0);
+    g_signal_connect(app.history_toggle_button, "clicked", G_CALLBACK(toggle_history_cb), NULL);
 
     content = gtk_hbox_new(FALSE, 12);
     gtk_box_pack_start(GTK_BOX(vbox), content, TRUE, TRUE, 0);
@@ -1068,6 +1176,8 @@ int main(int argc, char **argv) {
     g_signal_connect(app.board, "button-press-event", G_CALLBACK(board_button), NULL);
 
     side_panel = gtk_vbox_new(FALSE, 8);
+    app.history_sidebar = side_panel;
+    app.history_visible = TRUE;
     gtk_widget_set_size_request(side_panel, 260, 980);
     gtk_box_pack_start(GTK_BOX(content), side_panel, FALSE, FALSE, 0);
 
