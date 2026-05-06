@@ -20,7 +20,8 @@
 #define KINDLE_WINDOW_TITLE "L:A_N:application_ID:kindlechinesechess_PC:N_O:URL"
 #define KINDLE_WINDOW_TITLE_TOPBAR "L:A_N:application_PC:T_ID:kindlechinesechess_O:URL"
 #define LOG_PATH "/mnt/us/kindle-chinesechess.log"
-#define SAVE_PATH "/mnt/us/documents/kindle-chinesechess.txt"
+#define SAVE_PATH "/mnt/us/extensions/kindle-chinesechess/kindle-chinesechess.save"
+#define LEGACY_SAVE_PATH "/mnt/us/documents/kindle-chinesechess.txt"
 #define KINDLE_APP_WIDTH 1072
 #define KINDLE_APP_HEIGHT 1448
 #define DEFAULT_PIKAFISH_PATH "/mnt/us/extensions/kindle-chinesechess/bin/armhf/pikafish"
@@ -508,7 +509,7 @@ static void save_cb(GtkWidget *widget, gpointer data) {
         fprintf(f, "%d %d\n", m->move_id, m->to_row * 9 + m->to_col);
     }
     fclose(f);
-    set_message("Saved to documents.");
+    set_message("Game saved.");
     update_ui();
 }
 
@@ -521,6 +522,8 @@ static void load_cb(GtkWidget *widget, gpointer data) {
     (void)data;
 
     f = fopen(SAVE_PATH, "r");
+    if (f == NULL)
+        f = fopen(LEGACY_SAVE_PATH, "r");
     if (!f) {
         set_message("No saved game found.");
         update_ui();
@@ -1127,10 +1130,7 @@ int main(int argc, char **argv) {
     app.window = gtk_window_new(GTK_WINDOW_TOPLEVEL);
     gtk_window_set_title(GTK_WINDOW(app.window), kindle_window_title());
     gtk_window_set_default_size(GTK_WINDOW(app.window), KINDLE_APP_WIDTH, KINDLE_APP_HEIGHT);
-    gtk_widget_set_size_request(app.window, KINDLE_APP_WIDTH, KINDLE_APP_HEIGHT);
-    gtk_window_set_resizable(GTK_WINDOW(app.window), FALSE);
-    gtk_window_move(GTK_WINDOW(app.window), 0, 0);
-    gtk_window_set_position(GTK_WINDOW(app.window), GTK_WIN_POS_NONE);
+    gtk_window_set_resizable(GTK_WINDOW(app.window), TRUE);
     gtk_container_set_border_width(GTK_CONTAINER(app.window), 8);
     g_signal_connect(app.window, "delete-event", G_CALLBACK(quit_cb), NULL);
 
