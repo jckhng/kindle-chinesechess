@@ -1,5 +1,5 @@
 /*
- * Kindle ChineseChess
+ * Exact Chinese Chess
  * SPDX-License-Identifier: GPL-3.0-or-later
  *
  * Unofficial Kindle-focused Xiangqi adaptation. Code lineage, artwork
@@ -16,15 +16,15 @@
 #include "pikafish_uci.h"
 #include "xiangqi_engine.h"
 
-#define APP_TITLE "Kindle ChineseChess"
-#define KINDLE_WINDOW_TITLE "L:A_N:application_ID:kindlechinesechess_PC:N_O:URL"
-#define KINDLE_WINDOW_TITLE_TOPBAR "L:A_N:application_PC:T_ID:kindlechinesechess_O:URL"
-#define LOG_PATH "/mnt/us/kindle-chinesechess.log"
-#define SAVE_PATH "/mnt/us/extensions/kindle-chinesechess/kindle-chinesechess.save"
-#define LEGACY_SAVE_PATH "/mnt/us/documents/kindle-chinesechess.txt"
+#define APP_TITLE "Exact Chinese Chess"
+#define KINDLE_WINDOW_TITLE "L:A_N:application_ID:exactchinesechess_PC:N_O:URL"
+#define KINDLE_WINDOW_TITLE_TOPBAR "L:A_N:application_PC:T_ID:exactchinesechess_O:URL"
+#define LOG_PATH "/mnt/us/exact-chinesechess.log"
+#define SAVE_PATH "/mnt/us/extensions/exact-chinesechess/exact-chinesechess.save"
+#define LEGACY_SAVE_PATH "/mnt/us/documents/exact-chinesechess.txt"
 #define KINDLE_APP_WIDTH 1072
 #define KINDLE_APP_HEIGHT 1448
-#define DEFAULT_PIKAFISH_PATH "/mnt/us/extensions/kindle-chinesechess/bin/armhf/pikafish"
+#define DEFAULT_PIKAFISH_PATH "/mnt/us/extensions/exact-chinesechess/bin/armhf/pikafish"
 
 typedef enum {
     MODE_PLAY_RED = 0,
@@ -503,7 +503,7 @@ static void save_cb(GtkWidget *widget, gpointer data) {
         update_ui();
         return;
     }
-    fprintf(f, "kindle-chinesechess 1\n%d\n", app.game.history_len);
+    fprintf(f, "exact-chinesechess 1\n%d\n", app.game.history_len);
     for (i = 0; i < app.game.history_len; i++) {
         XiangqiMove *m = &app.game.history[i];
         fprintf(f, "%d %d\n", m->move_id, m->to_row * 9 + m->to_col);
@@ -529,7 +529,7 @@ static void load_cb(GtkWidget *widget, gpointer data) {
         update_ui();
         return;
     }
-    if (fscanf(f, "%63s %*d\n%d\n", header, &count) != 2 || strcmp(header, "kindle-chinesechess") != 0) {
+    if (fscanf(f, "%63s %*d\n%d\n", header, &count) != 2 || strcmp(header, "exact-chinesechess") != 0) {
         fclose(f);
         set_message("Save file is invalid.");
         update_ui();
@@ -1120,8 +1120,8 @@ int main(int argc, char **argv) {
     set_latest_view();
     xiangqi_init(&app.game);
     pikafish_uci_init(&app.pikafish,
-                      g_getenv("KINDLE_CHINESECHESS_PIKAFISH") != NULL ?
-                      g_getenv("KINDLE_CHINESECHESS_PIKAFISH") :
+                      g_getenv("EXACT_CHINESECHESS_PIKAFISH") != NULL ?
+                      g_getenv("EXACT_CHINESECHESS_PIKAFISH") :
                       DEFAULT_PIKAFISH_PATH);
     pikafish_uci_set_move_callback(&app.pikafish, pikafish_bestmove_cb, NULL);
     load_assets();
@@ -1138,7 +1138,7 @@ int main(int argc, char **argv) {
     gtk_container_add(GTK_CONTAINER(app.window), vbox);
 
     title = gtk_label_new(NULL);
-    gtk_label_set_markup(GTK_LABEL(title), "<b>Kindle ChineseChess</b>");
+    gtk_label_set_markup(GTK_LABEL(title), "<b>Exact Chinese Chess</b>");
     gtk_box_pack_start(GTK_BOX(vbox), title, FALSE, FALSE, 0);
 
     app.status = gtk_label_new("");
@@ -1203,7 +1203,7 @@ int main(int argc, char **argv) {
     g_signal_connect(app.mode_combo, "changed", G_CALLBACK(mode_changed_cb), NULL);
     g_signal_connect(app.level_combo, "changed", G_CALLBACK(level_changed_cb), NULL);
 
-    app_log("starting kindle-chinesechess");
+    app_log("starting exact-chinesechess");
     {
         GError *error = NULL;
         app.pikafish_available = pikafish_uci_start(&app.pikafish, &error);

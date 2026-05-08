@@ -1,6 +1,6 @@
 #!/bin/sh
 
-LOG_FILE="/mnt/us/kindle-chinesechess.log"
+LOG_FILE="/mnt/us/exact-chinesechess.log"
 
 if [ ! -f "$LOG_FILE" ]; then
     echo "No log yet: $LOG_FILE" >&2

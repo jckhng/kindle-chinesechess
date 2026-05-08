@@ -1,37 +1,37 @@
 {
   "items": [
     {
-      "name": "Kindle ChineseChess",
+      "name": "Exact Chinese Chess",
       "priority": 100,
       "items": [
         {
           "name": "Launch",
           "priority": 10,
-          "action": "/bin/sh ./launch_kindlechinesechess.sh",
+          "action": "/bin/sh ./launch_exactchinesechess.sh",
           "exitmenu": true
         },
         {
           "name": "Restart",
           "priority": 20,
-          "action": "/bin/sh ./launch_kindlechinesechess.sh --restart",
+          "action": "/bin/sh ./launch_exactchinesechess.sh --restart",
           "exitmenu": true
         },
         {
           "name": "Launch With Topbar",
           "priority": 25,
-          "action": "env KINDLE_SHOW_TOPBAR=1 /bin/sh ./launch_kindlechinesechess.sh --restart",
+          "action": "env KINDLE_SHOW_TOPBAR=1 /bin/sh ./launch_exactchinesechess.sh --restart",
           "exitmenu": true
         },
         {
           "name": "Stop",
           "priority": 30,
-          "action": "/bin/sh ./stop_kindlechinesechess.sh",
+          "action": "/bin/sh ./stop_exactchinesechess.sh",
           "exitmenu": false
         },
         {
           "name": "Tail Log",
           "priority": 40,
-          "action": "/bin/sh ./tail_log_kindlechinesechess.sh",
+          "action": "/bin/sh ./tail_log_exactchinesechess.sh",
           "exitmenu": false
         }
       ]

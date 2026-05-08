@@ -1,11 +1,11 @@
-# Kindle ChineseChess
+# Exact Chinese Chess
 
 A Kindle-friendly Xiangqi / Chinese Chess app using the same native GTK2/Cairo
-and KUAL packaging pattern as Kindle GlChess and Kindle Iagno.
+and KUAL packaging pattern as Kindle GlChess and Exact Reversi.
 
 ## Screenshot
 
-![Kindle ChineseChess screenshot](kindle-chinesechess.png)
+![Exact Chinese Chess screenshot](exact-chinesechess.png)
 
 ## Features
 
@@ -68,20 +68,20 @@ git submodule update --init --recursive
 The output package is:
 
 ```text
-release/kindle-chinesechess-extension.zip
+release/exact-chinesechess-extension.zip
 ```
 
 Unzip it at the Kindle USB-storage root so it creates:
 
 ```text
-/mnt/us/extensions/kindle-chinesechess
-/mnt/us/documents/shortcut_kindlechinesechess.sh
+/mnt/us/extensions/exact-chinesechess
+/mnt/us/documents/shortcut_exactchinesechess.sh
 ```
 
 Then launch from KUAL:
 
 ```text
-KUAL -> Kindle ChineseChess -> Launch
+KUAL -> Exact Chinese Chess -> Launch
 ```
 
 ## License And Provenance

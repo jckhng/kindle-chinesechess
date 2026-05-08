@@ -2,7 +2,7 @@
 
 This document explains how to cross-compile [Pikafish](https://github.com/official-pikafish/Pikafish)
 for the Kindle's ARMv7 hard-float (armhf) target and bundle it into the
-`kindle-chinesechess` extension package. It also records the non-obvious
+`exact-chinesechess` extension package. It also records the non-obvious
 engineering problems solved along the way so future maintainers do not have to
 rediscover them.
 
@@ -13,8 +13,8 @@ rediscover them.
 | Requirement | Notes |
 |---|---|
 | Docker | Any recent version that can run ARM containers |
-| `kindle-chinesechess-armhf-builder` container | Created by `./docker_rebuild.sh` |
-| Pikafish source tree | The in-repo `Pikafish` Git submodule, or set `KINDLE_CHINESECHESS_PIKAFISH_SRC` to another clone |
+| `exact-chinesechess-armhf-builder` container | Created by `./docker_rebuild.sh` |
+| Pikafish source tree | The in-repo `Pikafish` Git submodule, or set `EXACT_CHINESECHESS_PIKAFISH_SRC` to another clone |
 
 > **ARM binfmt** — the builder container runs 32-bit ARM code inside Docker.  
 > On Linux, install the emulation layer once with:
@@ -40,16 +40,16 @@ git submodule update --init --recursive
 ./package_extension.sh
 ```
 
-The finished package is at `release/kindle-chinesechess-extension.zip`.
+The finished package is at `release/exact-chinesechess-extension.zip`.
 
 ### Environment variables
 
 | Variable | Default | Purpose |
 |---|---|---|
-| `KINDLE_CHINESECHESS_PIKAFISH_SRC` | `Pikafish` | Path to the Pikafish source tree |
-| `KINDLE_CHINESECHESS_DOCKER_CONTAINER` | `kindle-chinesechess-armhf-builder` | Container name |
-| `KINDLE_CHINESECHESS_PIKAFISH_JOBS` | `nproc` | Parallel make jobs |
-| `KINDLE_CHINESECHESS_PIKAFISH_OUT_DIR` | `bin/armhf` | Output directory for `pikafish` and `pikafish.nnue`; use a temporary directory for non-destructive rebuild checks |
+| `EXACT_CHINESECHESS_PIKAFISH_SRC` | `Pikafish` | Path to the Pikafish source tree |
+| `EXACT_CHINESECHESS_DOCKER_CONTAINER` | `exact-chinesechess-armhf-builder` | Container name |
+| `EXACT_CHINESECHESS_PIKAFISH_JOBS` | `nproc` | Parallel make jobs |
+| `EXACT_CHINESECHESS_PIKAFISH_OUT_DIR` | `bin/armhf` | Output directory for `pikafish` and `pikafish.nnue`; use a temporary directory for non-destructive rebuild checks |
 
 ---
 
@@ -178,7 +178,7 @@ space was treated as part of the variable value; the rest became separate
 
 ## Runtime: Why Pikafish Must NOT Inherit `LD_LIBRARY_PATH`
 
-The main `kindle-chinesechess` app bundles all of its shared libraries
+The main `exact-chinesechess` app bundles all of its shared libraries
 (`libgtk`, `libgdk_pixbuf`, `libc`, `libm`, etc.) from the Docker container
 into `lib/armhf/` so it can run without those system packages. The launch
 script sets `LD_LIBRARY_PATH` to include that directory.
@@ -216,7 +216,7 @@ package's current working engine files, build into a temporary output directory:
 mkdir -p _pikafish_verify_out
 cp bin/armhf/pikafish.nnue _pikafish_verify_out/
 
-KINDLE_CHINESECHESS_PIKAFISH_OUT_DIR="$PWD/_pikafish_verify_out" \
+EXACT_CHINESECHESS_PIKAFISH_OUT_DIR="$PWD/_pikafish_verify_out" \
   ./build_pikafish.sh
 ```
 
@@ -226,20 +226,20 @@ binary to `_pikafish_verify_out/pikafish` instead of `bin/armhf/pikafish`.
 After `build_pikafish.sh` completes, check inside the container:
 
 ```bash
-docker exec kindle-chinesechess-armhf-builder /bin/bash -lc "
+docker exec exact-chinesechess-armhf-builder /bin/bash -lc "
   echo '=== GLIBC versions required ==='
-  objdump -x /src/kindle-chinesechess/_pikafish_verify_out/pikafish \
+  objdump -x /src/exact-chinesechess/_pikafish_verify_out/pikafish \
     | grep GLIBC | sed 's/.*GLIBC_//;s/ .*//' | sort -V | uniq
 
   echo '=== max GLIBC version ==='
-  objdump -x /src/kindle-chinesechess/_pikafish_verify_out/pikafish \
+  objdump -x /src/exact-chinesechess/_pikafish_verify_out/pikafish \
     | grep GLIBC | sed 's/.*GLIBC_//;s/ .*//' | sort -V | tail -1
 
   echo '=== dynamic deps (should be only glibc basics) ==='
-  ldd /src/kindle-chinesechess/_pikafish_verify_out/pikafish
+  ldd /src/exact-chinesechess/_pikafish_verify_out/pikafish
 
   echo '=== math functions statically linked (should show e_log.o etc.) ==='
-  objdump -x /src/kindle-chinesechess/_pikafish_verify_out/pikafish \
+  objdump -x /src/exact-chinesechess/_pikafish_verify_out/pikafish \
     | grep -E '^[0-9a-f]+ l.*\.(text|bss).*e_(log|pow|exp)' | head
 "
 ```
@@ -264,19 +264,19 @@ Kindles. Using `armv7` (no NEON) avoids these intrinsics entirely.
 ## File Locations After a Full Build
 
 ```
-kindle-chinesechess/
+exact-chinesechess/
   bin/armhf/
     pikafish           # ARMv7 hard-float binary (~1.8 MB)
     pikafish.nnue      # NNUE network weights (~49 MB)
   release/
-    kindle-chinesechess-extension.zip
+    exact-chinesechess-extension.zip
     SHA256SUMS
 ```
 
 The extension zip installs on the Kindle as:
 
 ```
-/mnt/us/extensions/kindle-chinesechess/
+/mnt/us/extensions/exact-chinesechess/
   bin/armhf/pikafish
   bin/armhf/pikafish.nnue
   ...

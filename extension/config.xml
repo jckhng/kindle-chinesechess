@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <extension>
   <information>
-    <name>Kindle ChineseChess</name>
-    <id>kindle_chinesechess</id>
+    <name>Exact Chinese Chess</name>
+    <id>exact_chinesechess</id>
     <version>0.1.0</version>
   </information>
   <menus>

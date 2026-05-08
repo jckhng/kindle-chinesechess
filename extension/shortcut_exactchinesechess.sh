@@ -1,11 +1,11 @@
 #!/bin/sh
 
-EXT_DIR="/mnt/us/extensions/kindle-chinesechess"
-LAUNCHER="$EXT_DIR/launch_kindlechinesechess.sh"
-LOG_FILE="/mnt/us/kindle-chinesechess-shortcut.log"
+EXT_DIR="/mnt/us/extensions/exact-chinesechess"
+LAUNCHER="$EXT_DIR/launch_exactchinesechess.sh"
+LOG_FILE="/mnt/us/exact-chinesechess-shortcut.log"
 
 {
-    echo "----- Kindle ChineseChess shortcut $(date) -----"
+    echo "----- Exact Chinese Chess shortcut $(date) -----"
     echo "cwd=$(pwd)"
     echo "launcher=$LAUNCHER"
 } >>"$LOG_FILE" 2>&1

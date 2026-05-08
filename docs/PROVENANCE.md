@@ -1,6 +1,6 @@
 # Provenance And Licensing
 
-Kindle ChineseChess is an unofficial Kindle-focused Xiangqi / Chinese Chess
+Exact Chinese Chess is an unofficial Kindle-focused Xiangqi / Chinese Chess
 port.
 
 It combines three distinct upstream references:
@@ -52,9 +52,9 @@ For binary releases with Pikafish included, keep these files in the generated
 package:
 
 ```text
-extensions/kindle-chinesechess/LICENSES/PIKAFISH-COPYING.txt
-extensions/kindle-chinesechess/LICENSES/PIKAFISH-AUTHORS.txt
-extensions/kindle-chinesechess/LICENSES/PIKAFISH-SOURCE.txt
+extensions/exact-chinesechess/LICENSES/PIKAFISH-COPYING.txt
+extensions/exact-chinesechess/LICENSES/PIKAFISH-AUTHORS.txt
+extensions/exact-chinesechess/LICENSES/PIKAFISH-SOURCE.txt
 ```
 
 ## License Notes
@@ -70,8 +70,8 @@ Those libraries keep their own upstream licenses. The generated extension
 package includes:
 
 ```text
-extensions/kindle-chinesechess/LICENSES/RUNTIME-LIBS.txt
-extensions/kindle-chinesechess/LICENSES/THIRD-PARTY-NOTICE.txt
+extensions/exact-chinesechess/LICENSES/RUNTIME-LIBS.txt
+extensions/exact-chinesechess/LICENSES/THIRD-PARTY-NOTICE.txt
 ```
 
 If publishing binary releases, keep the license files and runtime notices with
