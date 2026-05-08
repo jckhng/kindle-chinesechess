@@ -24,27 +24,27 @@ current guide for your exact device.
 
 ## Install
 
-Unzip `release/kindle-chinesechess-extension.zip` at the Kindle USB-storage root.
+Unzip `release/exact-chinesechess-extension.zip` at the Kindle USB-storage root.
 
 Expected paths:
 
 ```text
-/mnt/us/extensions/kindle-chinesechess
-/mnt/us/documents/shortcut_kindlechinesechess.sh
+/mnt/us/extensions/exact-chinesechess
+/mnt/us/documents/shortcut_exactchinesechess.sh
 ```
 
 Fix execute bits over SSH if needed:
 
 ```sh
-chmod 755 /mnt/us/extensions/kindle-chinesechess/*.sh
-chmod 755 /mnt/us/extensions/kindle-chinesechess/bin/armhf/kindle-chinesechess
-chmod 755 /mnt/us/documents/shortcut_kindlechinesechess.sh
+chmod 755 /mnt/us/extensions/exact-chinesechess/*.sh
+chmod 755 /mnt/us/extensions/exact-chinesechess/bin/armhf/exact-chinesechess
+chmod 755 /mnt/us/documents/shortcut_exactchinesechess.sh
 ```
 
 Launch from KUAL:
 
 ```text
-KUAL -> Kindle ChineseChess -> Launch
+KUAL -> Exact Chinese Chess -> Launch
 ```
 
 The document shortcut is optional. KUAL is the reliable launch path; a stock
@@ -54,6 +54,6 @@ launcher/file association is installed.
 Logs:
 
 ```sh
-tail -n 120 /mnt/us/kindle-chinesechess.log
-tail -n 120 /mnt/us/kindle-chinesechess-shortcut.log
+tail -n 120 /mnt/us/exact-chinesechess.log
+tail -n 120 /mnt/us/exact-chinesechess-shortcut.log
 ```

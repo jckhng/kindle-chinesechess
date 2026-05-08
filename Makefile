@@ -9,13 +9,13 @@ TEST_OBJS = smoke_test.o xiangqi_engine.o
 
 .PHONY: all clean
 
-all: kindle-chinesechess
+all: exact-chinesechess
 
-kindle-chinesechess: $(OBJS)
+exact-chinesechess: $(OBJS)
 	$(CC) $(CFLAGS) -o $@ $(OBJS) $(LDLIBS)
 
 smoke-test: $(TEST_OBJS)
 	$(CC) $(CFLAGS) -o $@ $(TEST_OBJS) $(LDLIBS)
 
 clean:
-	rm -f $(OBJS) $(TEST_OBJS) kindle-chinesechess smoke-test
+	rm -f $(OBJS) $(TEST_OBJS) exact-chinesechess smoke-test

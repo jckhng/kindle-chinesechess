@@ -1,5 +1,5 @@
 /*
- * Kindle ChineseChess Xiangqi rules engine
+ * Exact Chinese Chess Xiangqi rules engine
  * SPDX-License-Identifier: GPL-3.0-or-later
  *
  * Adapted from the GPL-3.0-or-later XMuli ChineseChess project.

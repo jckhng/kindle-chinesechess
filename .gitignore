@@ -1,5 +1,5 @@
 # Native build outputs
-/kindle-chinesechess
+/exact-chinesechess
 /smoke-test
 *.o
 /_pikafish_build/
@@ -12,7 +12,7 @@
 /release/
 /release/extensions/
 /release/documents/
-/release/kindle-chinesechess-extension/
+/release/exact-chinesechess-extension/
 
 # Editor/OS noise
 *~

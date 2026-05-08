@@ -1,4 +1,4 @@
-# Building Kindle ChineseChess
+# Building Exact Chinese Chess
 
 ## Requirements
 
@@ -35,22 +35,22 @@ Build Pikafish and repackage with the engine and NNUE:
 The persistent builder is:
 
 ```text
-image:     kindle-chinesechess-armhf-build:bullseye
-container: kindle-chinesechess-armhf-builder
+image:     exact-chinesechess-armhf-build:bullseye
+container: exact-chinesechess-armhf-builder
 ```
 
 Build outputs:
 
 ```text
-kindle-chinesechess
+exact-chinesechess
 smoke-test
-release/kindle-chinesechess-extension.zip
+release/exact-chinesechess-extension.zip
 ```
 
 ## Build Without Packaging
 
 ```bash
-KINDLE_CHINESECHESS_PACKAGE=0 ./docker_rebuild.sh
+EXACT_CHINESECHESS_PACKAGE=0 ./docker_rebuild.sh
 ```
 
 ## Builder Shell
@@ -63,13 +63,13 @@ Inside the container:
 
 ```bash
 make clean
-make kindle-chinesechess smoke-test
+make exact-chinesechess smoke-test
 ./smoke-test
 ```
 
 If you move the repository, recreate the persistent container:
 
 ```bash
-docker rm -f kindle-chinesechess-armhf-builder
+docker rm -f exact-chinesechess-armhf-builder
 ./docker_rebuild.sh
 ```

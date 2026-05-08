@@ -1,5 +1,5 @@
 /*
- * Kindle ChineseChess smoke tests
+ * Exact Chinese Chess smoke tests
  * SPDX-License-Identifier: GPL-3.0-or-later
  */
 

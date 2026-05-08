@@ -4,12 +4,12 @@ set -euo pipefail
 ROOT="$(CDPATH= cd -- "$(dirname -- "$0")" && pwd)"
 WORK_ROOT="$ROOT/dist"
 RELEASE_ROOT="$ROOT/release"
-EXT_ROOT="$WORK_ROOT/extensions/kindle-chinesechess"
+EXT_ROOT="$WORK_ROOT/extensions/exact-chinesechess"
 DOC_ROOT="$WORK_ROOT/documents"
-CONTAINER="${KINDLE_CHINESECHESS_DOCKER_CONTAINER:-kindle-chinesechess-armhf-builder}"
-PIKAFISH_BIN="${KINDLE_CHINESECHESS_PIKAFISH_BIN:-}"
-PIKAFISH_NNUE="${KINDLE_CHINESECHESS_PIKAFISH_NNUE:-}"
-PIKAFISH_SRC="${KINDLE_CHINESECHESS_PIKAFISH_SRC:-$ROOT/Pikafish}"
+CONTAINER="${EXACT_CHINESECHESS_DOCKER_CONTAINER:-exact-chinesechess-armhf-builder}"
+PIKAFISH_BIN="${EXACT_CHINESECHESS_PIKAFISH_BIN:-}"
+PIKAFISH_NNUE="${EXACT_CHINESECHESS_PIKAFISH_NNUE:-}"
+PIKAFISH_SRC="${EXACT_CHINESECHESS_PIKAFISH_SRC:-$ROOT/Pikafish}"
 
 rm -rf "$WORK_ROOT"
 mkdir -p "$EXT_ROOT/bin/armhf" \
@@ -19,13 +19,13 @@ mkdir -p "$EXT_ROOT/bin/armhf" \
          "$EXT_ROOT/LICENSES" \
          "$DOC_ROOT"
 
-cp "$ROOT/kindle-chinesechess" "$EXT_ROOT/bin/armhf/kindle-chinesechess"
+cp "$ROOT/exact-chinesechess" "$EXT_ROOT/bin/armhf/exact-chinesechess"
 cp "$ROOT/extension/config.xml" "$EXT_ROOT/config.xml"
 cp "$ROOT/extension/menu.json" "$EXT_ROOT/menu.json"
-cp "$ROOT/extension/launch_kindlechinesechess.sh" "$EXT_ROOT/launch_kindlechinesechess.sh"
-cp "$ROOT/extension/stop_kindlechinesechess.sh" "$EXT_ROOT/stop_kindlechinesechess.sh"
-cp "$ROOT/extension/tail_log_kindlechinesechess.sh" "$EXT_ROOT/tail_log_kindlechinesechess.sh"
-cp "$ROOT/extension/shortcut_kindlechinesechess.sh" "$DOC_ROOT/shortcut_kindlechinesechess.sh"
+cp "$ROOT/extension/launch_exactchinesechess.sh" "$EXT_ROOT/launch_exactchinesechess.sh"
+cp "$ROOT/extension/stop_exactchinesechess.sh" "$EXT_ROOT/stop_exactchinesechess.sh"
+cp "$ROOT/extension/tail_log_exactchinesechess.sh" "$EXT_ROOT/tail_log_exactchinesechess.sh"
+cp "$ROOT/extension/shortcut_exactchinesechess.sh" "$DOC_ROOT/shortcut_exactchinesechess.sh"
 cp "$ROOT/extension/NOTICE.txt" "$EXT_ROOT/NOTICE.txt"
 cp "$ROOT/extension/README.md" "$EXT_ROOT/README-package.txt"
 cp "$ROOT/extension/PIKAFISH.txt" "$EXT_ROOT/PIKAFISH.txt"
@@ -59,7 +59,7 @@ if [ -n "$PIKAFISH_BIN" ] && [ -f "$PIKAFISH_BIN" ]; then
         echo "Bundled pikafish.nnue ($(du -sh "$PIKAFISH_NNUE" | cut -f1))"
     else
         echo "Warning: pikafish.nnue not found; engine will not work without it." >&2
-        echo "Run build_pikafish.sh first, or set KINDLE_CHINESECHESS_PIKAFISH_NNUE." >&2
+        echo "Run build_pikafish.sh first, or set EXACT_CHINESECHESS_PIKAFISH_NNUE." >&2
     fi
 
     if [ -f "$PIKAFISH_SRC/Copying.txt" ]; then
@@ -83,7 +83,7 @@ if [ -n "$PIKAFISH_BIN" ] && [ -f "$PIKAFISH_BIN" ]; then
         fi
         echo
         echo "Built for ARMv7 hard-float (armhf) using arm-linux-gnueabihf-g++ via"
-        echo "the kindle-chinesechess-armhf-builder Docker container."
+        echo "the exact-chinesechess-armhf-builder Docker container."
         echo
         echo "Corresponding source model:"
         echo "- Clone the upstream repository at the commit above."
@@ -97,8 +97,8 @@ No Pikafish binary was bundled.
 
 The app will use its embedded fallback AI unless a Pikafish binary and its
 NNUE network file are installed at:
-  /mnt/us/extensions/kindle-chinesechess/bin/armhf/pikafish
-  /mnt/us/extensions/kindle-chinesechess/bin/armhf/pikafish.nnue
+  /mnt/us/extensions/exact-chinesechess/bin/armhf/pikafish
+  /mnt/us/extensions/exact-chinesechess/bin/armhf/pikafish.nnue
 
 Run build_pikafish.sh to compile Pikafish for ARM and download the NNUE, then
 re-run package_extension.sh to bundle them.
@@ -108,15 +108,15 @@ include the license, authors, and exact corresponding source/build details.
 EOF
 fi
 
-if docker exec "$CONTAINER" /bin/bash -lc 'test -f /src/kindle-chinesechess/kindle-chinesechess' >/dev/null 2>&1; then
+if docker exec "$CONTAINER" /bin/bash -lc 'test -f /src/exact-chinesechess/exact-chinesechess' >/dev/null 2>&1; then
     docker exec "$CONTAINER" /bin/bash -lc '
         {
             echo /lib/arm-linux-gnueabihf/ld-linux-armhf.so.3
-            ldd /src/kindle-chinesechess/kindle-chinesechess | grep -oE "/[^[:space:]]+"
+            ldd /src/exact-chinesechess/exact-chinesechess | grep -oE "/[^[:space:]]+"
             # Also include Pikafish C++ runtime deps (libstdc++, libgcc_s, libatomic)
             # so that when the main app spawns pikafish as a child process it finds them.
-            if [ -f /src/kindle-chinesechess/bin/armhf/pikafish ]; then
-                ldd /src/kindle-chinesechess/bin/armhf/pikafish | grep -oE "/[^[:space:]]+"
+            if [ -f /src/exact-chinesechess/bin/armhf/pikafish ]; then
+                ldd /src/exact-chinesechess/bin/armhf/pikafish | grep -oE "/[^[:space:]]+"
             fi
         } | sort -u
     ' > "$EXT_ROOT/LICENSES/RUNTIME-LIBS.txt"
@@ -143,17 +143,17 @@ else
     echo "No runtime libraries were bundled at packaging time." > "$EXT_ROOT/LICENSES/THIRD-PARTY-NOTICE.txt"
 fi
 
-chmod 755 "$EXT_ROOT/launch_kindlechinesechess.sh" \
-          "$EXT_ROOT/stop_kindlechinesechess.sh" \
-          "$EXT_ROOT/tail_log_kindlechinesechess.sh" \
-          "$DOC_ROOT/shortcut_kindlechinesechess.sh" \
-          "$EXT_ROOT/bin/armhf/kindle-chinesechess"
+chmod 755 "$EXT_ROOT/launch_exactchinesechess.sh" \
+          "$EXT_ROOT/stop_exactchinesechess.sh" \
+          "$EXT_ROOT/tail_log_exactchinesechess.sh" \
+          "$DOC_ROOT/shortcut_exactchinesechess.sh" \
+          "$EXT_ROOT/bin/armhf/exact-chinesechess"
 
 if [ -f "$EXT_ROOT/lib/armhf/ld-linux-armhf.so.3" ]; then
     chmod 755 "$EXT_ROOT/lib/armhf/ld-linux-armhf.so.3"
 fi
 
-ZIP_NAME="kindle-chinesechess-extension.zip"
+ZIP_NAME="exact-chinesechess-extension.zip"
 (
     cd "$WORK_ROOT"
     if command -v zip >/dev/null 2>&1; then
@@ -161,7 +161,7 @@ ZIP_NAME="kindle-chinesechess-extension.zip"
     else
         python3 - <<'PY'
 import os, zipfile
-with zipfile.ZipFile("kindle-chinesechess-extension.zip", "w", zipfile.ZIP_DEFLATED) as zf:
+with zipfile.ZipFile("exact-chinesechess-extension.zip", "w", zipfile.ZIP_DEFLATED) as zf:
     for top in ("extensions", "documents"):
         for root, _, files in os.walk(top):
             for name in files:

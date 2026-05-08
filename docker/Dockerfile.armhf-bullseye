@@ -16,4 +16,4 @@ RUN apt-get update \
         zip \
     && rm -rf /var/lib/apt/lists/*
 
-WORKDIR /src/kindle-chinesechess
+WORKDIR /src/exact-chinesechess

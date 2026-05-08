@@ -1,10 +1,10 @@
 Pikafish Integration
 ====================
 
-Kindle ChineseChess can use Pikafish as an external UCI engine when a
+Exact Chinese Chess can use Pikafish as an external UCI engine when a
 Kindle-compatible executable is present at:
 
-  /mnt/us/extensions/kindle-chinesechess/bin/armhf/pikafish
+  /mnt/us/extensions/exact-chinesechess/bin/armhf/pikafish
 
 If no compatible Pikafish binary is present, the app automatically falls back
 to its embedded AI.
@@ -36,6 +36,6 @@ The repository pins the tested Pikafish source as a Git submodule at:
 To rebuild the engine:
 
   git clone --recurse-submodules <repo>
-  cd kindle-chinesechess
+  cd exact-chinesechess
   ./build_pikafish.sh
   ./package_extension.sh

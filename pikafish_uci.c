@@ -1,5 +1,5 @@
 /*
- * Kindle ChineseChess Pikafish UCI adapter
+ * Exact Chinese Chess Pikafish UCI adapter
  * SPDX-License-Identifier: GPL-3.0-or-later
  */
 

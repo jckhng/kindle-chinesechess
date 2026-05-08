@@ -1,16 +1,16 @@
-# Kindle ChineseChess Extension Files
+# Exact Chinese Chess Extension Files
 
 Copy these files into your Kindle extension folder:
 
-- `config.xml` -> `/mnt/us/extensions/kindle-chinesechess/config.xml`
-- `menu.json` -> `/mnt/us/extensions/kindle-chinesechess/menu.json`
-- `launch_kindlechinesechess.sh` -> `/mnt/us/extensions/kindle-chinesechess/launch_kindlechinesechess.sh`
-- `stop_kindlechinesechess.sh` -> `/mnt/us/extensions/kindle-chinesechess/stop_kindlechinesechess.sh`
-- `tail_log_kindlechinesechess.sh` -> `/mnt/us/extensions/kindle-chinesechess/tail_log_kindlechinesechess.sh`
+- `config.xml` -> `/mnt/us/extensions/exact-chinesechess/config.xml`
+- `menu.json` -> `/mnt/us/extensions/exact-chinesechess/menu.json`
+- `launch_exactchinesechess.sh` -> `/mnt/us/extensions/exact-chinesechess/launch_exactchinesechess.sh`
+- `stop_exactchinesechess.sh` -> `/mnt/us/extensions/exact-chinesechess/stop_exactchinesechess.sh`
+- `tail_log_exactchinesechess.sh` -> `/mnt/us/extensions/exact-chinesechess/tail_log_exactchinesechess.sh`
 
 Optional document shortcut:
 
-- `shortcut_kindlechinesechess.sh` -> `/mnt/us/documents/shortcut_kindlechinesechess.sh`
+- `shortcut_exactchinesechess.sh` -> `/mnt/us/documents/shortcut_exactchinesechess.sh`
 
 KUAL is the reliable tap-launch path. The stock Kindle home screen normally
 does not execute `.sh` files directly.

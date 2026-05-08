@@ -2,7 +2,7 @@
 set -euo pipefail
 
 # Cross-compiles Pikafish for Kindle ARMv7 hard-float inside the existing
-# kindle-chinesechess-armhf-builder Docker container, then places the binary
+# exact-chinesechess-armhf-builder Docker container, then places the binary
 # and the NNUE network file into bin/armhf/ for packaging.
 #
 # ARMv7 requires two source patches:
@@ -14,15 +14,15 @@ set -euo pipefail
 # intrinsic) from the NNUE sparse-input path.
 
 ROOT="$(CDPATH= cd -- "$(dirname -- "$0")" && pwd)"
-PIKAFISH_SRC="${KINDLE_CHINESECHESS_PIKAFISH_SRC:-$ROOT/Pikafish}"
-CONTAINER="${KINDLE_CHINESECHESS_DOCKER_CONTAINER:-kindle-chinesechess-armhf-builder}"
-OUT_DIR="${KINDLE_CHINESECHESS_PIKAFISH_OUT_DIR:-$ROOT/bin/armhf}"
+PIKAFISH_SRC="${EXACT_CHINESECHESS_PIKAFISH_SRC:-$ROOT/Pikafish}"
+CONTAINER="${EXACT_CHINESECHESS_DOCKER_CONTAINER:-exact-chinesechess-armhf-builder}"
+OUT_DIR="${EXACT_CHINESECHESS_PIKAFISH_OUT_DIR:-$ROOT/bin/armhf}"
 ARCH="armv7"
-JOBS="${KINDLE_CHINESECHESS_PIKAFISH_JOBS:-$(nproc 2>/dev/null || echo 4)}"
+JOBS="${EXACT_CHINESECHESS_PIKAFISH_JOBS:-$(nproc 2>/dev/null || echo 4)}"
 
 if [ ! -d "$PIKAFISH_SRC/src" ]; then
     echo "Pikafish source not found at: $PIKAFISH_SRC" >&2
-    echo "Set KINDLE_CHINESECHESS_PIKAFISH_SRC to override." >&2
+    echo "Set EXACT_CHINESECHESS_PIKAFISH_SRC to override." >&2
     exit 1
 fi
 
@@ -195,7 +195,7 @@ PYEOF
 echo "Building Pikafish ARCH=$ARCH in Docker container $CONTAINER ..."
 docker exec "$CONTAINER" /bin/bash -lc "
     set -e
-    cd /src/kindle-chinesechess/_pikafish_build/src
+    cd /src/exact-chinesechess/_pikafish_build/src
     make clean 2>/dev/null || true
     # EXTRALDFLAGS: statically embed libstdc++, libgcc, and libm so the binary
     # does not need GLIBC_2.29 (log/pow/exp) at runtime on the Kindle older glibc.

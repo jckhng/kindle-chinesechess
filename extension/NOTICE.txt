@@ -1,4 +1,4 @@
-Kindle ChineseChess
+Exact Chinese Chess
 ===================
 
 Unofficial Kindle-friendly Xiangqi / Chinese Chess game using a native
@@ -18,7 +18,7 @@ project:
   https://github.com/Augus1217/Chinese-Chess
 
 The Kindle application shell, Docker build pattern, and KUAL packaging follow
-the GnomeGames4Kindle Kindle ports, especially Kindle GlChess and Kindle Iagno.
+the GnomeGames4Kindle Kindle ports, especially Kindle GlChess and Exact Reversi.
 
 Pikafish
 --------
