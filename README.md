@@ -84,6 +84,27 @@ Then launch from KUAL:
 KUAL -> Exact Chinese Chess -> Launch
 ```
 
+## Progressive Web App
+
+An installable browser version lives in [`pwa/`](pwa/). It uses a standalone
+TypeScript port of the native Xiangqi rules and fallback AI, keeps game state in
+browser `localStorage`, and works offline after the first load. For browser
+engine play it bundles Fairy-Stockfish WASM, a GPL-3.0 Xiangqi-capable engine
+build, when served with the cross-origin isolation headers required by threaded
+WebAssembly.
+
+```bash
+cd pwa
+npm install
+npm run dev
+```
+
+For a production build:
+
+```bash
+npm run build
+```
+
 ## License And Provenance
 
 Rules and built-in AI reference: XMuli ChineseChess, GPL-3.0-or-later,

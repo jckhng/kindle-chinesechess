@@ -1,0 +1,30 @@
+{
+  "name": "Exact Chinese Chess",
+  "short_name": "Exact Xiangqi",
+  "description": "An installable Xiangqi / Chinese Chess app for desktop Chrome and Android home screens.",
+  "theme_color": "#e5e5e5",
+  "background_color": "#e5e5e5",
+  "display": "standalone",
+  "start_url": "./",
+  "scope": "./",
+  "icons": [
+    {
+      "src": "icons/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "icons/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "icons/icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}

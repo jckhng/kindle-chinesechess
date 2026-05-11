@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+  <rect width="512" height="512" rx="112" fill="#111"/>
+  <rect x="58" y="58" width="396" height="396" rx="48" fill="#e5e5e5"/>
+  <circle cx="256" cy="256" r="142" fill="#f8f8f8" stroke="#111" stroke-width="24"/>
+  <circle cx="256" cy="256" r="108" fill="none" stroke="#111" stroke-width="10"/>
+  <text x="256" y="305" text-anchor="middle" font-family="Georgia, 'Noto Serif CJK SC', serif" font-size="148" font-weight="900" fill="#111">帥</text>
+</svg>
