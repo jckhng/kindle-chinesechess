@@ -3,9 +3,22 @@
 /smoke-test
 *.o
 /_pikafish_build/
+/_pikafish_aarch64_build/
 /_pikafish_verify_out/
 /bin/armhf/pikafish
 /bin/armhf/pikafish.nnue
+/bin/aarch64/pikafish
+/bin/aarch64/pikafish.nnue
+
+# PortMaster build/release outputs
+/portmaster/exactcc
+/portmaster/exact_chinesechess
+/portmaster/exact_chinesechess*.zip
+/portmaster/exact_chinesechess_muos_package.tar.gz
+/portmaster/*.png
+/portmaster/port/exact_chinesechess/exact_chinesechess/exactcc.*
+/portmaster/port/exact_chinesechess/exact_chinesechess/bin/
+/portmaster/port/exact_chinesechess/exact_chinesechess/licenses/
 
 # Generated package tree
 /dist/

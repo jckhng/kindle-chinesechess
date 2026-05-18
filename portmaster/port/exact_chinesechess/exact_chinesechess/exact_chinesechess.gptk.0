@@ -1,0 +1,16 @@
+up = up
+down = down
+left = left
+right = right
+
+a = enter
+b = esc
+x = u
+y = n
+
+l1 = comma
+r1 = period
+l2 = home
+r2 = end
+start = a
+select = q
