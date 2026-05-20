@@ -33,14 +33,11 @@ export LD_LIBRARY_PATH="$RUNDIR/libs.${DEVICE_ARCH}:$LD_LIBRARY_PATH"
 
 BIN="$RUNDIR/exactcc.${DEVICE_ARCH}"
 
-GPTK="$RUNDIR/exact_chinesechess.gptk"
-
 if [ ! -x "$BIN" ]; then
   echo "Missing binary for DEVICE_ARCH=${DEVICE_ARCH}: $BIN"
   exit 1
 fi
 
-$GPTOKEYB "$(basename "$BIN")" -c "$GPTK" &
 pm_platform_helper "$BIN"
 "$BIN"
 

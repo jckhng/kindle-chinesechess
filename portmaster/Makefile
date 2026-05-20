@@ -3,7 +3,12 @@ PKG_CONFIG ?= pkg-config
 
 TARGET ?= exactcc
 ROOT := ..
-SRC := src/exact_chinese_chess_portmaster.c $(ROOT)/xiangqi_engine.c
+SRC := src/exact_chinese_chess_portmaster.c \
+       src/engine.c \
+       src/game.c \
+       src/input.c \
+       src/ui.c \
+       $(ROOT)/xiangqi_engine.c
 
 CFLAGS += -Wall -Wextra -O2 $(shell $(PKG_CONFIG) --cflags sdl2)
 SDL_LIBS := $(filter-out -Wl%,$(shell $(PKG_CONFIG) --libs sdl2))
