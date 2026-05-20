@@ -2,6 +2,8 @@
 /exact-chinesechess
 /smoke-test
 *.o
+__pycache__/
+*.pyc
 /_pikafish_build/
 /_pikafish_aarch64_build/
 /_pikafish_verify_out/

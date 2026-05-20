@@ -9,7 +9,7 @@ CFLAGS += -Wall -Wextra -O2 $(shell $(PKG_CONFIG) --cflags sdl2)
 SDL_LIBS := $(filter-out -Wl%,$(shell $(PKG_CONFIG) --libs sdl2))
 LDLIBS += $(SDL_LIBS) -lm
 
-.PHONY: all clean package-layout
+.PHONY: all clean package-layout piece-assets
 
 all: $(TARGET)
 
@@ -34,6 +34,9 @@ package-layout: $(TARGET)
 		cp "$(ROOT)/Pikafish/Copying.txt" port/exact_chinesechess/exact_chinesechess/licenses/COPYING.PIKAFISH.GPL3; \
 		cp "$(ROOT)/Pikafish/AUTHORS" port/exact_chinesechess/exact_chinesechess/licenses/PIKAFISH_AUTHORS; \
 	fi
+
+piece-assets:
+	python3 scripts/generate_piece_assets.py
 
 clean:
 	rm -f $(TARGET)

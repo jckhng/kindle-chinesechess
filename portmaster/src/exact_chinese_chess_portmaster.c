@@ -18,6 +18,10 @@
 #include <time.h>
 #include <unistd.h>
 
+#define PIECE_ASSET_SET_COUNT 12
+
+static const int piece_asset_sizes[PIECE_ASSET_SET_COUNT] = { 24, 28, 34, 40, 42, 46, 52, 60, 72, 84, 96, 128 };
+
 typedef struct {
     bool available;
     bool ready;
@@ -56,7 +60,7 @@ typedef struct {
     SDL_Window *window;
     SDL_Renderer *renderer;
     SDL_Texture *board_texture;
-    SDL_Texture *piece_textures[2][XIANGQI_SOLDIER + 1];
+    SDL_Texture *piece_textures[2][XIANGQI_SOLDIER + 1][PIECE_ASSET_SET_COUNT];
     bool use_art;
     int width;
     int height;
@@ -812,16 +816,35 @@ static SDL_Texture *load_bmp_texture(SDL_Renderer *renderer, const char *path, b
     return texture;
 }
 
+static int nearest_piece_asset_index(int piece_size) {
+    int best = 0;
+    int best_delta = abs(piece_asset_sizes[0] - piece_size);
+    int i;
+    for (i = 1; i < PIECE_ASSET_SET_COUNT; i++) {
+        int delta = abs(piece_asset_sizes[i] - piece_size);
+        if (delta < best_delta) {
+            best = i;
+            best_delta = delta;
+        }
+    }
+    return best;
+}
+
 static void load_assets(App *app) {
     char path[256];
     int side;
     int type;
+    int set;
     app->use_art = false;
     app->board_texture = load_bmp_texture(app->renderer, "assets/xiangqi/board.bmp", false);
     for (side = XIANGQI_BLACK; side <= XIANGQI_RED; side++) {
         for (type = XIANGQI_GENERAL; type <= XIANGQI_SOLDIER; type++) {
-            snprintf(path, sizeof(path), "assets/xiangqi/%s", piece_asset_name((XiangqiSide)side, (XiangqiPieceType)type));
-            app->piece_textures[side][type] = load_bmp_texture(app->renderer, path, true);
+            for (set = 0; set < PIECE_ASSET_SET_COUNT; set++) {
+                snprintf(path, sizeof(path), "assets/xiangqi/pieces_%d/%s",
+                         piece_asset_sizes[set],
+                         piece_asset_name((XiangqiSide)side, (XiangqiPieceType)type));
+                app->piece_textures[side][type][set] = load_bmp_texture(app->renderer, path, true);
+            }
         }
     }
     app->use_art = app->board_texture != NULL;
@@ -831,13 +854,16 @@ static void load_assets(App *app) {
 static void destroy_assets(App *app) {
     int side;
     int type;
+    int set;
     if (app->board_texture) {
         SDL_DestroyTexture(app->board_texture);
     }
     for (side = XIANGQI_BLACK; side <= XIANGQI_RED; side++) {
         for (type = XIANGQI_GENERAL; type <= XIANGQI_SOLDIER; type++) {
-            if (app->piece_textures[side][type]) {
-                SDL_DestroyTexture(app->piece_textures[side][type]);
+            for (set = 0; set < PIECE_ASSET_SET_COUNT; set++) {
+                if (app->piece_textures[side][type][set]) {
+                    SDL_DestroyTexture(app->piece_textures[side][type][set]);
+                }
             }
         }
     }
@@ -873,12 +899,25 @@ static void clamp_pointer(App *app) {
     if (app->pointer_y >= app->height) app->pointer_y = app->height - 1;
 }
 
+static void warp_mouse_to_pointer(App *app) {
+    int x = app->pointer_x;
+    int y = app->pointer_y;
+    if (!app->window) {
+        return;
+    }
+    if (app->renderer) {
+        SDL_RenderLogicalToWindow(app->renderer, (float)app->pointer_x, (float)app->pointer_y, &x, &y);
+    }
+    SDL_WarpMouseInWindow(app->window, x, y);
+}
+
 static void update_pointer(App *app) {
     if (app->pointer_vx != 0 || app->pointer_vy != 0) {
         app->pointer_visible = true;
         app->pointer_x += app->pointer_vx;
         app->pointer_y += app->pointer_vy;
         clamp_pointer(app);
+        warp_mouse_to_pointer(app);
     }
 }
 
@@ -1329,24 +1368,29 @@ static void draw_board(App *app) {
         }
         x = left + piece->col * cell;
         y = top + piece->row * cell;
-        if (app->use_art && app->piece_textures[piece->side][piece->type]) {
+        if (app->use_art) {
             int piece_size = (int)(cell * 0.95);
-            SDL_Rect dst = { x - piece_size / 2, y - piece_size / 2, piece_size, piece_size };
-            SDL_RenderCopy(r, app->piece_textures[piece->side][piece->type], NULL, &dst);
-        } else {
-            if (piece->side == XIANGQI_RED) {
-                set_color(r, 230, 230, 230, 255);
-            } else {
-                set_color(r, 40, 40, 40, 255);
+            int set = nearest_piece_asset_index(piece_size);
+            SDL_Texture *texture = app->piece_textures[piece->side][piece->type][set];
+            if (texture) {
+                int draw_size = piece_size;
+                SDL_Rect dst = { x - draw_size / 2, y - draw_size / 2, draw_size, draw_size };
+                SDL_RenderCopy(r, texture, NULL, &dst);
+                continue;
             }
-            fill_circle(r, x, y, cell / 3);
-            if (piece->side == XIANGQI_RED) {
-                set_color(r, 170, 0, 0, 255);
-            } else {
-                set_color(r, 245, 245, 245, 255);
-            }
-            draw_text(r, piece_code(piece), x - 8, y - 6, cell >= 40 ? 2 : 1);
         }
+        if (piece->side == XIANGQI_RED) {
+            set_color(r, 230, 230, 230, 255);
+        } else {
+            set_color(r, 40, 40, 40, 255);
+        }
+        fill_circle(r, x, y, cell / 3);
+        if (piece->side == XIANGQI_RED) {
+            set_color(r, 170, 0, 0, 255);
+        } else {
+            set_color(r, 245, 245, 245, 255);
+        }
+        draw_text(r, piece_code(piece), x - 8, y - 6, cell >= 40 ? 2 : 1);
     }
 
     if (is_latest_view(app) && app->selected_id >= 0) {
@@ -1833,6 +1877,7 @@ int main(int argc, char **argv) {
     if (!SDL_getenv("SDL_VIDEO_MINIMIZE_ON_FOCUS_LOSS")) {
         SDL_setenv("SDL_VIDEO_MINIMIZE_ON_FOCUS_LOSS", "0", 0);
     }
+    SDL_SetHint(SDL_HINT_RENDER_SCALE_QUALITY, "1");
 
     log_sdl_drivers();
 
@@ -1858,7 +1903,6 @@ int main(int argc, char **argv) {
         app.pointer_y = 72;
     }
     SDL_ShowCursor(SDL_DISABLE);
-    SDL_WarpMouseInWindow(app.window, app.pointer_x, app.pointer_y);
 
     app.renderer = SDL_CreateRenderer(app.window, -1, SDL_RENDERER_SOFTWARE);
     if (!app.renderer) {
@@ -1878,6 +1922,7 @@ int main(int argc, char **argv) {
         }
     }
     SDL_RenderSetLogicalSize(app.renderer, app.width, app.height);
+    warp_mouse_to_pointer(&app);
     open_controllers(&app);
     load_assets(&app);
     if (engine_start(&app.engine)) {
@@ -1923,11 +1968,14 @@ int main(int argc, char **argv) {
                 break;
             case SDL_MOUSEBUTTONDOWN:
                 if (SDL_GetTicks() >= input_ready_tick) {
-                    app.pointer_visible = true;
-                    app.pointer_x = event.button.x;
-                    app.pointer_y = event.button.y;
-                    clamp_pointer(&app);
                     if (event.button.button == SDL_BUTTON_LEFT) {
+                        bool had_pointer = app.pointer_visible;
+                        if (!had_pointer) {
+                            app.pointer_x = event.button.x;
+                            app.pointer_y = event.button.y;
+                            clamp_pointer(&app);
+                        }
+                        app.pointer_visible = true;
                         pointer_click(&app, app.pointer_x, app.pointer_y);
                     }
                 }

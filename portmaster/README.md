@@ -63,6 +63,14 @@ The full PortMaster package uses a native aarch64 Pikafish build at
 binary was for Kindle/ARMv7 compatibility and is not used by the aarch64
 PortMaster package.
 
+Piece artwork is checked in as multiple pre-rendered BMP size sets under
+`assets/xiangqi/pieces_*`. Regenerate them from the source PNG artwork with:
+
+```sh
+cd exact-chinesechess
+python3 portmaster/scripts/generate_piece_assets.py
+```
+
 To rebuild the PortMaster Pikafish binary:
 
 ```sh
